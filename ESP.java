@@ -1,8 +1,15 @@
 import java.util.*;
 
 /**
- * Cache
+ * COMPUTER ORGANISATION <br></br>
+ * END-SEMESTER PROJECT 
+ * <br></br>
+ * This program simulates the functioning of the cache and main memory.
+ * @author Samarth Saxena 
+ * @author Roll No.: 2019328
+ * 
  */
+
 public class ESP 
 {
 	/** Main memory */
@@ -15,7 +22,9 @@ public class ESP
 	/** Meta bits (valid bit) */
 	static boolean[] meta;	
 
+	/** Mapping mode */
 	static int mode=0;
+	/** Set size */
 	static int ss=1;
 	/** Memory size, cache size */
 	static int ms, cs;		
@@ -172,25 +181,6 @@ public class ESP
 				result=true;
 			}
 		}
-
-		// if(meta[i]==true && tag[i]==tagbits)
-		// {
-		// 	result=true;
-		// 	break;
-		// }
-		// for(int i=0; i<nl; i++)
-		// {
-		// 	if(meta[i]==true && tag[i]==tagbits)
-		// 	{
-		// 		result=true;
-		// 		break;
-		// 	}
-		// }
-
-		// System.out.println(toint(tagbits));
-		// System.out.println(toint(cacheindex));
-		// System.out.println(toint(blockindex));
-		// System.out.println(toint(blockoffset));
 		
 
 		if(result)
@@ -218,7 +208,6 @@ public class ESP
 		boolean[] tagbits=new boolean[tb];
 		boolean[] cacheindex=new boolean[ci];
 		boolean[] blockoffset=new boolean[bo];
-		// boolean[] blockindex=new boolean[tb+ci];
 
 		Random rand = new Random();
 
@@ -263,11 +252,6 @@ public class ESP
 				break;
 			}
 		}
-
-		// System.out.println(toint(tagbits));
-		// System.out.println(toint(cacheindex));
-		// System.out.println(toint(blockindex));
-		// System.out.println(toint(blockoffset));
 		
 
 		if(result)
@@ -358,13 +342,7 @@ public class ESP
 
 				break;
 			}
-		}
-
-		// System.out.println(toint(tagbits));
-		// System.out.println(toint(cacheindex));
-		// System.out.println(toint(blockindex));
-		// System.out.println(toint(blockoffset));
-		
+		}		
 
 		if(result)
 		{
@@ -399,7 +377,6 @@ public class ESP
 				tag[pos][x]=tagbits[x];
 			}
 
-			System.out.println("\npos= " + pos);
 			System.out.println("\nWord no: " + cache[pos][toint(blockoffset)]); 
 		}
 
@@ -413,6 +390,7 @@ public class ESP
 		cs=input.nextInt();
 		bs=input.nextInt();
 		mode=input.nextInt();
+		int queries=input.nextInt();
 		
 		nb=ms/bs;
 		nl=cs/bs;
@@ -469,7 +447,7 @@ public class ESP
 		}
 
 		outer:
-		for (int k = 0; k < 6; k++) 
+		for (int k = 0; k < queries; k++) 
 		{
 			for (int i = 0; i < pa; i++) 
 			{
@@ -506,18 +484,6 @@ public class ESP
 			// }
 		}
 		
-		//Printing
-		// System.out.println("Physical address");
-		// for (int i=0; i<pa; i++) 
-		// {
-		// 	System.out.print(to01(p_adr[i]) + " ");
-		// }
-		// System.out.println("\nCache address");
-		// for (int i=0; i<ca; i++) 
-		// {
-		// 	System.out.print(to01(c_adr[i]) + " ");
-		// }
-		// System.out.println();
 		
 		input.close();
 		
