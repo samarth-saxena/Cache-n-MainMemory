@@ -16,6 +16,7 @@ public class ESP
 	static boolean[] meta;	
 
 	static int mode=0;
+	static int ss=1;
 	/** Memory size, cache size */
 	static int ms, cs;		
 	/** Block size */
@@ -27,8 +28,8 @@ public class ESP
 	static int pa, ca;			
 	/** No. of Block Offset bits*/
 	static int bo;	
-	/** No. of Block index, Cache index bits */			
-	static int bi,ci;	
+	/** No. of Block index/ Cache index/ Set index bits */			
+	static int bi,ci,si;	
 	/** no of Tagbits */		
 	static int tb;
 
@@ -36,105 +37,6 @@ public class ESP
 	static boolean[] p_adr;
 	/** Cache address */
 	static boolean[] c_adr;
-	
-	public static void main(String[] args) 
-	{
-		Scanner input=new Scanner(System.in);
-
-		ms=input.nextInt();
-		cs=input.nextInt();
-		bs=input.nextInt();
-		mode=input.nextInt();
-
-		nb=ms/bs;
-		nl=cs/bs;
-
-		memory=new int[nb][bs];
-		cache=new int[nl][bs];
-
-		pa = (int) (Math.log(ms)/Math.log(2));
-		ca = (int) (Math.log(cs)/Math.log(2));
-		p_adr=new boolean[pa];
-		c_adr=new boolean[ca];
-
-		bo= (int) (Math.log(bs)/Math.log(2));
-
-		bi= (int) (Math.log(nb)/Math.log(2));
-		ci= (int) (Math.log(nl)/Math.log(2));
-		
-		tag=new boolean[nl][bi];
-		meta=new boolean[nl];
-
-		for (int i = 0, k=0; i < nb; i++) 
-		{
-			for (int j = 0; j < bs; j++, k++) 
-			{
-				memory[i][j]=k;
-			}
-		}
-
-		for (int i = 0; i < nl; i++) 
-		{
-			meta[i]=false;
-		}
-
-		
-		for (int k = 0; k < 6; k++) 
-		{
-			for (int i = 0; i < pa; i++) 
-			{
-				p_adr[i]=from01(input.nextInt());
-			}
-
-			// directmode(p_adr);
-			switch (mode) 
-			{
-				case 1:
-					directmode(p_adr);
-					break;
-				
-				case 2:
-					associative(p_adr);
-					break;
-				
-				case 3:
-					break;
-
-				default:
-					System.out.println("Invalid mode.");
-					break;
-			}
-			
-			
-			// System.out.println("\nTag / Meta");
-			// for(int j=0; j<nl; j++)
-			// {
-			// 	for (int j2 = 0; j2 < tb; j2++) 
-			// 	{
-			// 		System.out.print(to01(tag[j][j2]) + " ");
-			// 	}
-			// 	System.out.println("  " + to01(meta[j]));
-			// }
-		}
-		
-		//Printing
-		// System.out.println("Physical address");
-		// for (int i=0; i<pa; i++) 
-		// {
-		// 	System.out.print(to01(p_adr[i]) + " ");
-		// }
-		// System.out.println("\nCache address");
-		// for (int i=0; i<ca; i++) 
-		// {
-		// 	System.out.print(to01(c_adr[i]) + " ");
-		// }
-		// System.out.println();
-		
-		
-		
-		input.close();
-		
-	}
 	
 	static boolean from01(int n)
 	{
@@ -180,7 +82,7 @@ public class ESP
 		System.out.println(pa+"\n"+bo+"\n"+bi);
 	}
 
-	static boolean isfull()
+	static boolean iscachefull()
 	{
 		boolean f=true;
 		for(int i=0; i<nl; i++)
@@ -194,10 +96,38 @@ public class ESP
 		return f;
 	}
 	
-	static int nextempty()
+	static int nextemptycache()
 	{
 		int pos=-1;
 		for(int i=0; i<nl; i++)
+		{
+			if(!meta[i])
+			{
+				pos=i;
+				break;
+			}
+		}
+		return pos;
+	}
+
+	static boolean issetfull(int start, int end)
+	{
+		boolean f=true;
+		for(int i=start; i<end; i++)
+		{
+			if(!meta[i])
+			{
+				f=false;
+				break;
+			}
+		}
+		return f;
+	}
+
+	static int nextemptyset(int start, int end)
+	{
+		int pos=start;
+		for(int i=start; i<end; i++)
 		{
 			if(!meta[i])
 			{
@@ -351,13 +281,13 @@ public class ESP
 			System.out.println("\nCACHE MISS");
 			int pos;
 			
-			if(isfull())
+			if(iscachefull())
 			{
 				pos=rand.nextInt(nl);
 			}
 			else
 			{
-				pos=nextempty();
+				pos=nextemptycache();
 			}
 
 
@@ -377,4 +307,220 @@ public class ESP
 			System.out.println("\nWord no: " + cache[pos][toint(blockoffset)]); 
 		}
 	}
+
+	static void setassociative(boolean[] p_adr)
+	{
+		boolean[] tagbits=new boolean[tb];
+		boolean[] setindex=new boolean[si];
+		boolean[] blockoffset=new boolean[bo];
+		int cacheindex=-1;
+
+		Random rand = new Random();
+		
+		int i=0;
+		for (; i < tb; i++) 
+		{
+			tagbits[i]=p_adr[i];
+		}
+		for (int j=0; j < si; i++, j++) 
+		{
+			setindex[j]=p_adr[i];
+		}
+		for(int j=0; j<bo; i++, j++)
+		{
+			blockoffset[j]=p_adr[i];
+		}
+			
+		boolean result=false;
+
+		int start=toint(setindex)*ss;
+		int end=(toint(setindex)+1)*ss;
+		
+		// System.out.println("\ntagbits");
+		// for (int j3 = 0; j3 < tb; j3++) 
+		// {
+		// 	System.out.print(to01(tagbits[j3]) + " ");
+		// }
+		
+		for(int j=toint(setindex)*ss; j<(toint(setindex)+1)*ss; j++)
+		{
+			// System.out.println("\ntagarray");
+			// for (int j2 = 0; j2 < tb; j2++) 
+			// {
+			// 	System.out.print(to01(tag[j][j2]) + " ");
+			// }
+			
+			if(meta[j]==true && Arrays.equals(tag[j],tagbits))
+			{
+				
+				result=true;
+				cacheindex=j;
+
+				break;
+			}
+		}
+
+		// System.out.println(toint(tagbits));
+		// System.out.println(toint(cacheindex));
+		// System.out.println(toint(blockindex));
+		// System.out.println(toint(blockoffset));
+		
+
+		if(result)
+		{
+			System.out.println("\nCACHE HIT");
+
+			System.out.println("\nWord no: " + cache[cacheindex][toint(blockoffset)]); 
+		}
+		else
+		{
+			System.out.println("\nCACHE MISS");
+			int pos;
+			
+			if(issetfull(start, end))
+			{
+				pos=start+rand.nextInt(end-start);
+			}
+			else
+			{
+				pos=nextemptyset(start, end);
+			}
+
+
+			for(int x=0; x<bs; x++)
+			{
+				cache[pos][x]=memory[toint(tagbits)][x];
+			}
+			
+			meta[pos]=true;
+
+			for(int x=0; x<tb; x++)
+			{
+				tag[pos][x]=tagbits[x];
+			}
+
+			System.out.println("\npos= " + pos);
+			System.out.println("\nWord no: " + cache[pos][toint(blockoffset)]); 
+		}
+
+	}
+
+	public static void main(String[] args) 
+	{
+		Scanner input=new Scanner(System.in);
+
+		ms=input.nextInt();
+		cs=input.nextInt();
+		bs=input.nextInt();
+		mode=input.nextInt();
+		
+		nb=ms/bs;
+		nl=cs/bs;
+
+		memory=new int[nb][bs];
+		cache=new int[nl][bs];
+
+		pa = (int) (Math.log(ms)/Math.log(2));
+		ca = (int) (Math.log(cs)/Math.log(2));
+		p_adr=new boolean[pa];
+		c_adr=new boolean[ca];
+
+		bo= (int) (Math.log(bs)/Math.log(2));
+
+		bi= (int) (Math.log(nb)/Math.log(2));
+		ci= (int) (Math.log(nl)/Math.log(2));
+
+		switch (mode) 
+		{
+			case 1:
+				tb=bi-ci;
+				break;
+			
+			case 2:
+				tb=bi;
+				break;
+			
+			case 3:
+				ss=input.nextInt();
+				int ns=nl/ss;
+				si= (int) (Math.log(ns)/Math.log(2));
+				tb=bi-si;
+				break;
+
+			default:
+				System.out.println("Invalid mode.");
+				break;
+		}
+		
+		tag=new boolean[nl][tb];
+		meta=new boolean[nl];
+
+		for (int i = 0, k=0; i < nb; i++) 
+		{
+			for (int j = 0; j < bs; j++, k++) 
+			{
+				memory[i][j]=k;
+			}
+		}
+
+		for (int i = 0; i < nl; i++) 
+		{
+			meta[i]=false;
+		}
+
+		outer:
+		for (int k = 0; k < 6; k++) 
+		{
+			for (int i = 0; i < pa; i++) 
+			{
+				p_adr[i]=from01(input.nextInt());
+			}
+
+			switch (mode) 
+			{
+				case 1:
+					directmode(p_adr);
+					break;
+				
+				case 2:
+					associative(p_adr);
+					break;
+				
+				case 3:
+					setassociative(p_adr);
+					break;
+
+				default:
+					System.out.println("An error ocurred.");
+					break outer;
+			}
+			
+			// System.out.println("\nTag / Meta");
+			// for(int j=0; j<nl; j++)
+			// {
+			// 	for (int j2 = 0; j2 < tb; j2++) 
+			// 	{
+			// 		System.out.print(to01(tag[j][j2]) + " ");
+			// 	}
+			// 	System.out.println("  " + to01(meta[j]));
+			// }
+		}
+		
+		//Printing
+		// System.out.println("Physical address");
+		// for (int i=0; i<pa; i++) 
+		// {
+		// 	System.out.print(to01(p_adr[i]) + " ");
+		// }
+		// System.out.println("\nCache address");
+		// for (int i=0; i<ca; i++) 
+		// {
+		// 	System.out.print(to01(c_adr[i]) + " ");
+		// }
+		// System.out.println();
+		
+		input.close();
+		
+	}
+
 }
