@@ -15,6 +15,7 @@ public class ESP
 	/** Meta bits (valid bit) */
 	static boolean[] meta;	
 
+	static int mode=0;
 	/** Memory size, cache size */
 	static int ms, cs;		
 	/** Block size */
@@ -43,6 +44,7 @@ public class ESP
 		ms=input.nextInt();
 		cs=input.nextInt();
 		bs=input.nextInt();
+		mode=input.nextInt();
 
 		nb=ms/bs;
 		nl=cs/bs;
@@ -83,23 +85,36 @@ public class ESP
 			{
 				p_adr[i]=from01(input.nextInt());
 			}
-			// for (int i = tb, j=0; i < pa; i++, j++) 
-			// {
-			// 	c_adr[j]=p_adr[i];
-			// }
 
 			// directmode(p_adr);
-			associative(p_adr);
-			
-			System.out.println("\nTag / Meta");
-			for(int j=0; j<nl; j++)
+			switch (mode) 
 			{
-				for (int j2 = 0; j2 < tb; j2++) 
-				{
-					System.out.print(to01(tag[j][j2]) + " ");
-				}
-				System.out.println("  " + to01(meta[j]));
+				case 1:
+					directmode(p_adr);
+					break;
+				
+				case 2:
+					associative(p_adr);
+					break;
+				
+				case 3:
+					break;
+
+				default:
+					System.out.println("Invalid mode.");
+					break;
 			}
+			
+			
+			// System.out.println("\nTag / Meta");
+			// for(int j=0; j<nl; j++)
+			// {
+			// 	for (int j2 = 0; j2 < tb; j2++) 
+			// 	{
+			// 		System.out.print(to01(tag[j][j2]) + " ");
+			// 	}
+			// 	System.out.println("  " + to01(meta[j]));
+			// }
 		}
 		
 		//Printing
@@ -291,19 +306,19 @@ public class ESP
 				
 		boolean result=false;
 		
-		System.out.println("\ntagbits");
-		for (int j3 = 0; j3 < tb; j3++) 
-		{
-			System.out.print(to01(tagbits[j3]) + " ");
-		}
+		// System.out.println("\ntagbits");
+		// for (int j3 = 0; j3 < tb; j3++) 
+		// {
+		// 	System.out.print(to01(tagbits[j3]) + " ");
+		// }
 		
 		for(int j=0; j<nl; j++)
 		{
-			System.out.println("\ntagarray");
-			for (int j2 = 0; j2 < tb; j2++) 
-			{
-				System.out.print(to01(tag[j][j2]) + " ");
-			}
+			// System.out.println("\ntagarray");
+			// for (int j2 = 0; j2 < tb; j2++) 
+			// {
+			// 	System.out.print(to01(tag[j][j2]) + " ");
+			// }
 			
 			if(meta[j]==true && Arrays.equals(tag[j],tagbits))
 			{
