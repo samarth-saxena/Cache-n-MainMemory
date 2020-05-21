@@ -59,9 +59,8 @@ public class ESP
 
 		bi= (int) (Math.log(nb)/Math.log(2));
 		ci= (int) (Math.log(nl)/Math.log(2));
-		tb=bi-ci;
-
-		tag=new boolean[nl][tb];
+		
+		tag=new boolean[nl][bi];
 		meta=new boolean[nl];
 
 		for (int i = 0, k=0; i < nb; i++) 
@@ -77,19 +76,30 @@ public class ESP
 			meta[i]=false;
 		}
 
-		// printall();
-		for (int k = 0; k < 4; k++) 
+		
+		for (int k = 0; k < 6; k++) 
 		{
 			for (int i = 0; i < pa; i++) 
 			{
 				p_adr[i]=from01(input.nextInt());
 			}
-			for (int i = tb, j=0; i < pa; i++, j++) 
-			{
-				c_adr[j]=p_adr[i];
-			}
+			// for (int i = tb, j=0; i < pa; i++, j++) 
+			// {
+			// 	c_adr[j]=p_adr[i];
+			// }
 
-			directmode(p_adr);
+			// directmode(p_adr);
+			associative(p_adr);
+			
+			System.out.println("\nTag / Meta");
+			for(int j=0; j<nl; j++)
+			{
+				for (int j2 = 0; j2 < tb; j2++) 
+				{
+					System.out.print(to01(tag[j][j2]) + " ");
+				}
+				System.out.println("  " + to01(meta[j]));
+			}
 		}
 		
 		//Printing
@@ -131,21 +141,67 @@ public class ESP
 		return res;
 	}
 
+	static boolean[] tobin(int n)
+	{
+		boolean[] res;
+		int i=0,temp=n,c=0;
+		while(temp!=0)
+		{
+			temp/=2;
+			++c;
+		}
+		res=new boolean[c];
+		while(n!=0)
+		{
+			res[i]=from01(n%2);
+			n/=2;
+		}
+		return res;
+	}
+
 	static void printall()
 	{
 		System.out.println(ms+"\n"+bs+"\n"+nb);
 		System.out.println(pa+"\n"+bo+"\n"+bi);
 	}
 
+	static boolean isfull()
+	{
+		boolean f=true;
+		for(int i=0; i<nl; i++)
+		{
+			if(!meta[i])
+			{
+				f=false;
+				break;
+			}
+		}
+		return f;
+	}
+	
+	static int nextempty()
+	{
+		int pos=-1;
+		for(int i=0; i<nl; i++)
+		{
+			if(!meta[i])
+			{
+				pos=i;
+				break;
+			}
+		}
+		return pos;
+	}
 
 	static void directmode(boolean[] p_adr)
 	{
+		tb=bi-ci;
+		
 		boolean[] tagbits=new boolean[tb];
 		boolean[] cacheindex=new boolean[ci];
 		boolean[] blockoffset=new boolean[bo];
 		boolean[] blockindex=new boolean[tb+ci];
-		// String ci_str="";
-		// String bo_str="";
+
 		int i=0;
 		for (; i < tb; i++) 
 		{
@@ -156,18 +212,14 @@ public class ESP
 		{
 			cacheindex[j]=p_adr[i];
 			blockindex[i]=p_adr[i];
-			// ci_str+=to01(cacheindex[j]);
-			// System.out.print(to01(cacheindex[j]));
 		}
 		for(int j=0; j<bo; i++, j++)
 		{
 			blockoffset[j]=p_adr[i];
 		}
 		
-		// System.out.println(Integer.parseInt(tagbits,2)+" "+Integer.parseInt(cacheindex,2));
 				
 		boolean result=false;
-		// System.out.println(meta[toint(cacheindex)]);
 		if(meta[toint(cacheindex)])
 		{
 			if(Arrays.equals(tag[toint(cacheindex)],tagbits))
@@ -209,8 +261,105 @@ public class ESP
 			cache[toint(cacheindex)]=memory[toint(blockindex)];
 			meta[toint(cacheindex)]=true;
 			tag[toint(cacheindex)]=tagbits;
-			// System.out.println(toint(tag[toint(cacheindex)]));
+
 			System.out.println("\nWord no: " + cache[toint(cacheindex)][toint(blockoffset)]); 
+		}
+	}
+
+	static void associative(boolean[] p_adr)
+	{
+		tb=bi;
+
+		boolean[] tagbits=new boolean[tb];
+		boolean[] cacheindex=new boolean[ci];
+		boolean[] blockoffset=new boolean[bo];
+		// boolean[] blockindex=new boolean[tb+ci];
+
+		Random rand = new Random();
+
+		int i;
+		for (i=0; i < tb; i++) 
+		{
+			tagbits[i]=p_adr[i];
+		}
+		
+		for(int j=0; j<bo; i++, j++)
+		{
+			blockoffset[j]=p_adr[i];
+		}
+		
+				
+		boolean result=false;
+		
+		System.out.println("\ntagbits");
+		for (int j3 = 0; j3 < tb; j3++) 
+		{
+			System.out.print(to01(tagbits[j3]) + " ");
+		}
+		
+		for(int j=0; j<nl; j++)
+		{
+			System.out.println("\ntagarray");
+			for (int j2 = 0; j2 < tb; j2++) 
+			{
+				System.out.print(to01(tag[j][j2]) + " ");
+			}
+			
+			if(meta[j]==true && Arrays.equals(tag[j],tagbits))
+			{
+				
+				result=true;
+				// for(int x=0; x<ci; x++)
+				// {
+				// 	cacheindex[x]=tobin(j)[x];
+				// }
+				cacheindex=tobin(j);
+
+				break;
+			}
+		}
+
+		// System.out.println(toint(tagbits));
+		// System.out.println(toint(cacheindex));
+		// System.out.println(toint(blockindex));
+		// System.out.println(toint(blockoffset));
+		
+
+		if(result)
+		{
+			System.out.println("\nCACHE HIT");
+
+			System.out.println("\nWord no: " + cache[toint(cacheindex)][toint(blockoffset)]); 
+		}
+		else
+		{
+			System.out.println("\nCACHE MISS");
+			int pos;
+			
+			if(isfull())
+			{
+				pos=rand.nextInt(nl);
+			}
+			else
+			{
+				pos=nextempty();
+			}
+
+
+			for(int x=0; x<bs; x++)
+			{
+				cache[pos][x]=memory[toint(tagbits)][x];
+			}
+			
+			meta[pos]=true;
+
+			for(int x=0; x<tb; x++)
+			{
+				tag[pos][x]=tagbits[x];
+			}
+
+			System.out.println("\npos= " + pos);
+			System.out.println("\nWord no: " + cache[pos][toint(blockoffset)]); 
 		}
 	}
 }
