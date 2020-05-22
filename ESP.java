@@ -44,8 +44,6 @@ public class ESP
 
 	/** Physical address */
 	static boolean[] p_adr;
-	/** Cache address */
-	static boolean[] c_adr;
 	
 	static boolean from01(int n)
 	{
@@ -394,7 +392,6 @@ public class ESP
 		pa = (int) (Math.log(ms)/Math.log(2));
 		ca = (int) (Math.log(cs)/Math.log(2));
 		p_adr=new boolean[pa];
-		c_adr=new boolean[ca];
 
 		bo= (int) (Math.log(bs)/Math.log(2));
 
