@@ -85,12 +85,6 @@ public class ESP
 		return res;
 	}
 
-	static void printall()
-	{
-		System.out.println(ms+"\n"+bs+"\n"+nb);
-		System.out.println(pa+"\n"+bo+"\n"+bi);
-	}
-
 	static boolean iscachefull()
 	{
 		boolean f=true;
@@ -187,7 +181,7 @@ public class ESP
 		{
 			System.out.println("\nCACHE HIT");
 
-			System.out.println("\nWord no: " + cache[toint(cacheindex)][toint(blockoffset)]); 
+			System.out.println("Word no: " + cache[toint(cacheindex)][toint(blockoffset)]); 
 		}
 		else
 		{
@@ -197,7 +191,7 @@ public class ESP
 			meta[toint(cacheindex)]=true;
 			tag[toint(cacheindex)]=tagbits;
 
-			System.out.println("\nWord no: " + cache[toint(cacheindex)][toint(blockoffset)]); 
+			System.out.println("Word no: " + cache[toint(cacheindex)][toint(blockoffset)]); 
 		}
 	}
 
@@ -258,7 +252,7 @@ public class ESP
 		{
 			System.out.println("\nCACHE HIT");
 
-			System.out.println("\nWord no: " + cache[toint(cacheindex)][toint(blockoffset)]); 
+			System.out.println("Word no: " + cache[toint(cacheindex)][toint(blockoffset)]); 
 		}
 		else
 		{
@@ -287,8 +281,7 @@ public class ESP
 				tag[pos][x]=tagbits[x];
 			}
 
-			System.out.println("\npos= " + pos);
-			System.out.println("\nWord no: " + cache[pos][toint(blockoffset)]); 
+			System.out.println("Word no: " + cache[pos][toint(blockoffset)]); 
 		}
 	}
 
@@ -348,7 +341,7 @@ public class ESP
 		{
 			System.out.println("\nCACHE HIT");
 
-			System.out.println("\nWord no: " + cache[cacheindex][toint(blockoffset)]); 
+			System.out.println("Word no: " + cache[cacheindex][toint(blockoffset)]); 
 		}
 		else
 		{
@@ -377,7 +370,7 @@ public class ESP
 				tag[pos][x]=tagbits[x];
 			}
 
-			System.out.println("\nWord no: " + cache[pos][toint(blockoffset)]); 
+			System.out.println("Word no: " + cache[pos][toint(blockoffset)]); 
 		}
 
 	}
@@ -473,15 +466,16 @@ public class ESP
 					break outer;
 			}
 			
-			// System.out.println("\nTag / Meta");
-			// for(int j=0; j<nl; j++)
-			// {
-			// 	for (int j2 = 0; j2 < tb; j2++) 
-			// 	{
-			// 		System.out.print(to01(tag[j][j2]) + " ");
-			// 	}
-			// 	System.out.println("  " + to01(meta[j]));
-			// }
+			System.out.println("\nTag Array / Meta Array");
+			for(int j=0; j<nl; j++)
+			{
+				for (int j2 = 0; j2 < tb; j2++) 
+				{
+					System.out.print(to01(tag[j][j2]) + " ");
+				}
+				System.out.println("  " + to01(meta[j]));
+			}
+			System.out.println();
 		}
 		
 		
